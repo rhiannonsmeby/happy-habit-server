@@ -1,5 +1,5 @@
 {
-  "name": "express-boilerplate",
+  "name": "happy-habit",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -21,16 +21,16 @@
     "express": "^4.17.1",
     "helmet": "^4.3.1",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.95.1",
+    "knex": "^0.95.2",
     "morgan": "^1.10.0",
     "path": "^0.12.7",
-    "pg": "^7.18.2",
-    "postgrator-cli": "^4.0.0"
+    "pg": "^7.18.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
+    "postgrator-cli": "^3.2.0",
     "supertest": "^6.0.1"
   }
 }

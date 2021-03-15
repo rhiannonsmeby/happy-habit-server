@@ -9,7 +9,7 @@ TRUNCATE
 INSERT INTO users (full_name, username, email, password) 
 VALUES
 ('Demo User', 'demo_user', 'demo@gmail.com', 'password1'),
-('Harrison Baty', 'harrisonb', 'harris@gmail.com', 'password2'),
+('son Baty', 'harrisonb', 'harris@gmail.com', 'password2'),
 ('Sarah', 'thebirdspapaya', 'thebirdspapaya@biz.com', 'password3');
 
 INSERT INTO activities (assigned_user, activity_name)
