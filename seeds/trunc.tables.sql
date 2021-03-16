@@ -1,5 +1,5 @@
 TRUNCATE
     user,
-    activity,
-    mood_log
+    -- activity,
+    entries
     RESTART IDENTITY CASCADE;

@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS mood_logs;
+DROP TABLE IF EXISTS entries;
