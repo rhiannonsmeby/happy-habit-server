@@ -14,6 +14,7 @@ const serializeEntries = entries => ({
     start_mood: entries.start_mood,
     end_mood: entries.end_mood,
     notes: entries.notes,
+    date_created: entries.date_created,
 })
 
 entriesRouter
@@ -82,7 +83,7 @@ entriesRouter
             const {notes} = req.body
             const entriesToUpdate = {notes}
 
-            constnumberOfValues = Object.values(summaryToUppdate).filter(Boolean).length
+            constnumberOfValues = Object.values(entriesToUppdate).filter(Boolean).length
             if (numberOfValues === 0) {
                 return res.status(400).json({
                     error: {

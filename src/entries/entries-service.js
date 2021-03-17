@@ -1,5 +1,3 @@
-const { default: knex } = require("knex")
-
 const EntriesService = {
     getAllEntries(knex) {
         return knex.select('*').from('entries')
