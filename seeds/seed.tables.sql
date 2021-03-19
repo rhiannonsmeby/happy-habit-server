@@ -8,9 +8,9 @@ TRUNCATE
 
 INSERT INTO users (user_name, password) 
 VALUES
-('demo_user', 'password1'),
-('harrisonb', 'password2'),
-('thebirdspapaya', 'password3');
+('demo_user', 'Password1!'),
+('harrisonb', 'Password2!'),
+('thebirdspapaya', 'Password3!');
 
 -- INSERT INTO activities (assigned_user, activity_name)
 -- VALUES

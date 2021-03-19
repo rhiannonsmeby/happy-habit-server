@@ -1,6 +1,7 @@
 const path = require('path')
 const express = require('express')
 const EntriesService = require('./entries-service')
+const { requireAuth } = require('../middleware/jwt-auth')
 const {join} = require('path')
 
 const entriesRouter = express.Router()
@@ -19,6 +20,7 @@ const serializeEntries = entries => ({
 
 entriesRouter
     .route('/')
+    .all(requireAuth)
     .get((req, res, next) => {
         const knexInstance = req.app.get('db')
         EntriesService.getAllEntries(knexInstance)
@@ -51,6 +53,7 @@ entriesRouter
     })
     entriesRouter
         .route('/:id')
+        .all(requireAuth)
         .all((req, res, next) => {
             EntriesService.getById(
                 req.app.get('db'),

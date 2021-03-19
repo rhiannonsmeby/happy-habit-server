@@ -1,5 +1,5 @@
 TRUNCATE
-    user,
+    users,
     -- activity,
     entries
     RESTART IDENTITY CASCADE;
