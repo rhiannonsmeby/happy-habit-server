@@ -1,90 +1,119 @@
-const knex = require('knex');
-const supertest = require('supertest');
-const app = require('../src/app');
-const helpers = require('./test-helpers');
-const AuthService = require('../src/auth/auth-service');
+const jwt = require('jsonwebtoken')
+const app = require('../src/app')
+const helpers = require('./test-helpers')
 
-describe('Auth Endpoints', function () {
-  let db;
+describe.only('Auth Endpoints', function () {
+  let db
 
-  const testUsers = helpers.makeUsersArray();
-  const testUser = testUsers[0];
+  const testUsers = helpers.makeUsersArray()
+  const testUser = testUsers[0]
 
   before('make knex instance', () => {
-    db = knex({
-      client: 'pg',
-      connection: process.env.TEST_DATABASE_URL,
-    });
-    app.set('db', db);
-  });
+    db = helpers.makeKnexInstance()
+    app.set('db', db)
+  })
 
-  after('disconnect from db', () => db.destroy());
+  after('disconnect from db', () => db.destroy())
 
-  before('clean the table', () => helpers.cleanTables());
+  before('cleanup', () => helpers.cleanTables(db))
 
-  afterEach('cleanup', () => helpers.cleanTables());
+  afterEach('cleanup', () => helpers.cleanTables(db))
 
-  describe('POST /api/auth/login', () => {
-    beforeEach('insert users', () => {
-        return helpers.seedTestUsers(db, testUsers);
-    })
+  /**
+   * @description Get token for login
+   **/
+  describe(`POST /api/auth/token`, () => {
+    beforeEach('insert users', () =>
+      helpers.seedUsers(
+        db,
+        testUsers,
+      )
+    )
 
-    const requiredFields = ['user_name', 'password'];
+    const requiredFields = ['username', 'password']
 
-    requiredFields.forEach((field) => {
-      const loginBody = {
-        user_name: testUser.user_name,
+    requiredFields.forEach(field => {
+      const loginAttemptBody = {
+        username: testUser.username,
         password: testUser.password,
-      };
-      it(`responds with 404 error when ${field} is missing`, () => {
-        delete loginBody[field];
+      }
+
+      it(`responds with 400 required error when '${field}' is missing`, () => {
+        delete loginAttemptBody[field]
 
         return supertest(app)
-          .post('/api/auth/login')
-          .send(loginBody)
+          .post('/api/auth/token')
+          .send(loginAttemptBody)
           .expect(400, {
-            error: { message: `Missing ${field} in request body` },
-          });
-      });
-    });
+            error: `Missing '${field}' in request body`,
+          })
+      })
+    })
 
-    it('responds with 400 and "invalid username or password" when login body contains fields, but user_name is not found in db', () => {
-      const invalidUser = {
-        user_name: 'bad username',
+    it(`responds 400 'invalid username or password' when bad username`, () => {
+      const userInvalidUser = { username: 'user-not', password: 'existy' }
+      return supertest(app)
+        .post('/api/auth/token')
+        .send(userInvalidUser)
+        .expect(400, { error: `Incorrect username or password` })
+    })
+
+    it(`responds 400 'invalid username or password' when bad password`, () => {
+      const userInvalidPass = { username: testUser.username, password: 'incorrect' }
+      return supertest(app)
+        .post('/api/auth/token')
+        .send(userInvalidPass)
+        .expect(400, { error: `Incorrect username or password` })
+    })
+
+    it(`responds 200 and JWT auth token using secret when valid credentials`, () => {
+      const userValidCreds = {
+        username: testUser.username,
         password: testUser.password,
-      };
+      }
+      const expectedToken = jwt.sign(
+        { id: testUser.id, name: testUser.name },
+        process.env.JWT_SECRET,
+        {
+          subject: testUser.username,
+          algorithm: 'HS256',
+        }
+      )
       return supertest(app)
-        .post('/api/auth/login')
-        .send(invalidUser)
-        .expect(400, { error: { message: 'Incorrect username or password' } });
-    });
+        .post('/api/auth/token')
+        .send(userValidCreds)
+        .expect(200, {
+          authToken: expectedToken,
+        })
+    })
+  })
 
-    it('responds with 400 and "invalid username or password" when user_name exists, but password is wrong', () => {
-      const invalidUserPass = {
-        user_name: testUser.user_name,
-        password: 'im a hacker',
-      };
+  /**
+   * @description Refresh token
+   **/
+  describe(`PATCH /api/auth/token`, () => {
+    beforeEach('insert users', () =>
+      helpers.seedUsers(
+        db,
+        testUsers,
+      )
+    )
 
+    it(`responds 200 and JWT auth token using secret`, () => {
+      const expectedToken = jwt.sign(
+        { user_id: testUser.id, name: testUser.name },
+        process.env.JWT_SECRET,
+        {
+          subject: testUser.username,
+          algorithm: 'HS256',
+        }
+      )
       return supertest(app)
-        .post('/api/auth/login')
-        .send(invalidUserPass)
-        .expect(400, { error: { message: 'Incorrect username or password' } });
-    });
-
-    it('responds with 200 and a JWT token when the credentials are valid in the database', () => {
-      const validUser = {
-        user_name: testUser.user_name,
-        password: testUser.password,
-      };
-
-      // make a JWT token with the valid user to compare against
-
-      const expectedToken = AuthService.makeJwt(validUser);
-
-      return supertest(app)
-        .post('/api/auth/login')
-        .send(validUser)
-        .expect(200, { token: expectedToken });
-    });
-  });
-});
+        .put('/api/auth/token')
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .expect(200, {
+          authToken: expectedToken,
+        })
+    })
+  })
+})

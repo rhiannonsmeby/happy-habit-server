@@ -1,16 +1,16 @@
 BEGIN;
 
 TRUNCATE
-    users,
+    "user",
     -- activities,
-    entries
+    "entry"
     RESTART IDENTITY CASCADE;
 
-INSERT INTO users (user_name, password) 
+INSERT INTO "user" (username, password, name) 
 VALUES
-('demo_user', 'Password1!'),
-('harrisonb', 'Password2!'),
-('thebirdspapaya', 'Password3!');
+('demo_user', 'Password1!', 'Demo Person'),
+('harrisonb', 'Password2!', 'Harrison'),
+('thebirdspapaya', 'Password3!', 'Sarah');
 
 -- INSERT INTO activities (assigned_user, activity_name)
 -- VALUES
@@ -21,7 +21,7 @@ VALUES
 -- (3, 'Watch an episode of my favorite TV show'),
 -- (3, 'Take a shower');
 
-INSERT INTO entries (assigned_user, exercise, start_mood, end_mood, notes)
+INSERT INTO "entry" (assigned_user, exercise, start_mood, end_mood, notes)
 VALUES
 (1, 'journal', 1, 3, 'Today I used a journal propmt about gratitude. I finished about 20 minutes of journaling feeling much better.'),
 (2, 'go for a walk', 1, 2, 'Not the major mood boost I was looking for'),

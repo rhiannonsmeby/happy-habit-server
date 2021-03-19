@@ -1,44 +1,37 @@
-const AuthService = require('../auth/auth-service');
+const { JsonWebTokenError } = require('jsonwebtoken')
+const AuthService = require('../auth/auth-service')
 
 async function requireAuth(req, res, next) {
-  // get JWT token out of auth header
+  const authToken = req.get('Authorization') || ''
 
-  const authToken = req.get('Authorization') || '';
-  let bearerToken;
-
-  //check to make sure token starts with bearer, if it does, slice down to just the jwt
-
+  let bearerToken
   if (!authToken.toLowerCase().startsWith('bearer ')) {
-    return res.status(401).json({ error: { message: 'Missing bearer token' } });
+    return res.status(401).json({ error: 'Missing bearer token' })
   } else {
-    bearerToken = authToken.slice('bearer '.length, authToken.length);
+    bearerToken = authToken.slice(7, authToken.length)
   }
 
-  //token and user authentication
-
   try {
-    // verify jwt
-
-    const payload = AuthService.verifyJwt(bearerToken);
-
-    // using payload, get user from database with username
+    const payload = AuthService.verifyJwt(bearerToken)
 
     const user = await AuthService.getUserWithUsername(
       req.app.get('db'),
-      payload.sub
-    );
+      payload.sub,
+    )
 
-    if (!users) {
-      return res
-        .status(401)
-        .json({ error: { message: 'Unauthorized request' } });
-    }
+    if (!user)
+      return res.status(401).json({ error: 'Unauthorized request' })
 
-    req.user = user;
-    next();
+    req.user = user
+    next()
   } catch (error) {
-    return res.status(401).json({ error: { message: 'Unauthorized request' } });
+    if (error instanceof JsonWebTokenError)
+      return res.status(401).json({ error: 'Unauthorized request' })
+
+    next(error)
   }
 }
 
-module.exports = { requireAuth };
+module.exports = {
+  requireAuth,
+}

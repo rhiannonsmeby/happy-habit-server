@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 describe.only('Auth Endpoints', function () {
   let db;
 
-  const { testUsers} = helpers.makeUsersArray;
+  const testUsers = helpers.makeUsersArray();
   const testUser = testUsers[0];
 
   before('make knex instance', () => {
@@ -22,26 +22,28 @@ describe.only('Auth Endpoints', function () {
   before('cleanup', () => helpers.cleanTables(db));
   afterEach('cleanup', () => helpers.cleanTables(db));
 
-  describe('POST /api/users', () => {
+  describe('POST /api/user', () => {
     context('User Validation', () => {
       beforeEach('insert users and fill tables', () => {
-        return helpers.seedTestUsers(db, testUsers);
+        return helpers.seedUsers(db, testUsers);
       });
       const requiredFields = [
-        'user_name',
+        'username',
         'password',
+        'name',
       ];
 
       requiredFields.forEach((field) => {
         const registerAttempt = {
-          user_name: 'madonna',
+          username: 'madonna',
           password: 'materialgirl',
+          name: 'Madonna',
         };
 
         it(`responds with a 400 error when ${field} is missing`, () => {
           delete registerAttempt[field];
           return supertest(app)
-            .post('/api/users')
+            .post('/api/user')
             .send(registerAttempt)
             .expect(400, {
               error: { message: `Missing '${field}' in request body` },
@@ -51,12 +53,13 @@ describe.only('Auth Endpoints', function () {
 
       it('responds with 400 "Password must be longer than 8 characters" when empty password', () => {
         const shortPassUser = {
-          user_name: 'madonna',
+          username: 'madonna',
           password: 'girl',
+          name: 'Madonna',
         };
 
         return supertest(app)
-          .post('/api/users')
+          .post('/api/user')
           .send(shortPassUser)
           .expect(400, {
             error: { message: 'Password must be longer than 8 characters' },
@@ -65,12 +68,13 @@ describe.only('Auth Endpoints', function () {
 
       it('responds with 400 "Password must be shorter than 72 characters" when long password', () => {
         const longPassUser = {
-          user_name: 'madonna',
+          username: 'madonna',
           password: '*'.repeat(73),
+          name: 'Madonna'
         };
 
         return supertest(app)
-          .post('/api/users')
+          .post('/api/user')
           .send(longPassUser)
           .expect(400, {
             error: { message: 'Password must be less than 72 characters' },
@@ -78,12 +82,13 @@ describe.only('Auth Endpoints', function () {
       });
       it('responds with 400 "Password cannot begin with a space" when space at beginning of password', () => {
         const spaceBeforePassUser = {
-          user_name: 'madonna',
+          username: 'madonna',
           password: ' materialgirl',
+          name: 'Madonna'
         };
 
         return supertest(app)
-          .post('/api/users')
+          .post('/api/user')
           .send(spaceBeforePassUser)
           .expect(400, {
             error: { message: 'Password must not start or end with a space' },
@@ -91,12 +96,13 @@ describe.only('Auth Endpoints', function () {
       });
       it('responds with 400 "Password cannot end with a space" when space at end of password', () => {
         const spaceAfterPassUser = {
-          user_name: 'madonna',
+          username: 'madonna',
           password: 'materialgirl ',
+          name: 'Madonna'
         };
 
         return supertest(app)
-          .post('/api/users')
+          .post('/api/user')
           .send(spaceAfterPassUser)
           .expect(400, {
             error: { message: 'Password must not start or end with a space' },
@@ -104,12 +110,13 @@ describe.only('Auth Endpoints', function () {
       });
       it('responds with 400 error when password isnt complex enough,', () => {
         const badPassUser = {
-          user_name: 'madonna',
+          username: 'madonna',
           password: 'materialgirl',
+          name: 'Madonna'
         };
 
         return supertest(app)
-          .post('/api/users')
+          .post('/api/user')
           .send(badPassUser)
           .expect(400, {
             error: {
@@ -120,12 +127,13 @@ describe.only('Auth Endpoints', function () {
       });
       it('responds with 400 error when username is already taken', () => {
         const takenPassUser = {
-          user_name: testUser.user_name,
-          password: 'materialgirl',
+          username: testUser.username,
+          password: 'mAterialgirl97!',
+          name: 'Madonna'
         };
 
         return supertest(app)
-          .post('/api/users')
+          .post('/api/user')
           .send(takenPassUser)
           .expect(400, {
             error: {
@@ -138,29 +146,30 @@ describe.only('Auth Endpoints', function () {
     context('Successful submission', () => {
       it('responds with 201, serialized user, storing bcrypt password', () => {
         const newUser = {
-          user_name: 'test-user',
+          username: 'test-user',
           password: 'P@sswor6',
+          name: 'Test User'
         };
 
         return supertest(app)
-          .post('/api/users')
+          .post('/api/user')
           .send(newUser)
           .expect(201)
           .expect((response) => {
             expect(response.body).to.have.property('id');
-            expect(response.body.user_name).to.eql(newUser.user_name);
+            expect(response.body.username).to.eql(newUser.username);
             expect(response.body).to.not.have.property('password');
             expect(response.headers.location).to.eql(
-              `/api/users/${response.body.id}`
+              `/api/user/${response.body.id}`
             );
           })
           .expect((response) => {
-            db.from('users')
+            db.from('user')
               .select('*')
               .where({ id: response.body.id })
               .first()
               .then((row) => {
-                expect(row.user_name).to.eql(newUser.user_name);
+                expect(row).to.eql(newUser.username);
                 return bcrypt.compare(newUser.password, row.password);
               })
               .then((isMatch) => {

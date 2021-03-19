@@ -1,40 +1,40 @@
 const path = require('path')
 const express = require('express')
-const EntriesService = require('./entries-service')
+const EntryService = require('./entry-service')
 const { requireAuth } = require('../middleware/jwt-auth')
 const {join} = require('path')
 
-const entriesRouter = express.Router()
+const entryRouter = express.Router()
 const jsonParser = express.json()
 
-const serializeEntries = entries => ({
+const serializeEntry = entry => ({
     //assigned_user, exercise, start_mood, end_mood, notes
-    id: entries.id,
-    assigned_user: entries.assigned_user,
-    exercise: entries.exercise,
-    start_mood: entries.start_mood,
-    end_mood: entries.end_mood,
-    notes: entries.notes,
-    date_created: entries.date_created,
+    id: entry.id,
+    assigned_user: entry.assigned_user,
+    exercise: entry.exercise,
+    start_mood: entry.start_mood,
+    end_mood: entry.end_mood,
+    notes: entry.notes,
+    date_created: entry.date_created,
 })
 
-entriesRouter
+entryRouter
     .route('/')
     .all(requireAuth)
     .get((req, res, next) => {
         const knexInstance = req.app.get('db')
-        EntriesService.getAllEntries(knexInstance)
-            .then(entries => {
-                res.json(entries.map(serializeEntries))
+        EntryService.getAllEntries(knexInstance)
+            .then(entry => {
+                res.json(entry.map(serializeEntry))
             })
             .catch(next)
     })
     .post(jsonParser, (req, res, next) => {
         const knexInstance = req.app.get('db')
         const {exercise, start_mood, end_mood} = req.body
-        const newEntries = {exercise, start_mood, end_mood}
+        const newEntry = {exercise, start_mood, end_mood}
 
-        for (const [key, value] of Object.entries(newEntries)) {
+        for (const [key, value] of Object.entries(newEntry)) {
             if (value == null) {
                 return res.status(400).json({
                     error: {message: `Missing '${key}' in request body`}
@@ -42,38 +42,38 @@ entriesRouter
             }
         }
 
-        EntriesService.insertEntries(knexInstance, newEntries)
-            .then(entries => {
+        EntryService.insertEntry(knexInstance, newEntry)
+            .then(entry => {
                 res
                     .status(201)
-                    .location(path.posix.join(req.originalUrl, `/entries/${entries.id}`))
-                    .json(serializeEntries(entries))
+                    .location(path.posix.join(req.originalUrl, `/entry/${entry.id}`))
+                    .json(serializeEntry(entry))
             })
             .catch(next)
     })
-    entriesRouter
+    entryRouter
         .route('/:id')
         .all(requireAuth)
         .all((req, res, next) => {
-            EntriesService.getById(
+            EntryService.getById(
                 req.app.get('db'),
                 req.params.id
             )
-            .then(entries => {
-                if (!entries) {
+            .then(entry => {
+                if (!entry) {
                     return res.status(404).json({
                         error: {message: `Entry does not exist`}
                     })
                 }
-                res.entries = entries
+                res.entry = entry
                 next()
             })
         })
         .get((req, res, next) => {
-            res.json(serializeEntries(res.entries))
+            res.json(serializeEntry(res.entry))
         })
         .delete((req, res, next) => {
-            EntriesService.deleteEntries(
+            EntryService.deleteEntry(
                 req.app.get('db'),
                 req.params.id
             )
@@ -84,9 +84,9 @@ entriesRouter
         })
         .patch(jsonParser, (req, res, next) => {
             const {notes} = req.body
-            const entriesToUpdate = {notes}
+            const entryToUpdate = {notes}
 
-            constnumberOfValues = Object.values(entriesToUppdate).filter(Boolean).length
+            constnumberOfValues = Object.values(entryToUppdate).filter(Boolean).length
             if (numberOfValues === 0) {
                 return res.status(400).json({
                     error: {
@@ -95,10 +95,10 @@ entriesRouter
                 })
             }
 
-            EntriesService.updateEntries(
+            EntryService.updateEntry(
                 req.app.get('db'),
                 req.params.id,
-                entriesToUpdate
+                entryToUpdate
             )
                 .then(numRowsAffected => {
                     res.status(204).end()
@@ -106,4 +106,4 @@ entriesRouter
                 .catch(next)
         })
 
-        module.exports = entriesRouter
+        module.exports = entryRouter
