@@ -4,7 +4,7 @@ const app = require('../src/app');
 const helpers = require('./test-helpers');
 const bcrypt = require('bcryptjs');
 
-describe.only('Auth Endpoints', function () {
+describe('Auth Endpoints', function () {
   let db;
 
   const testUsers = helpers.makeUsersArray();
@@ -46,7 +46,7 @@ describe.only('Auth Endpoints', function () {
             .post('/api/user')
             .send(registerAttempt)
             .expect(400, {
-              error: { message: `Missing '${field}' in request body` },
+              error: `Missing '${field}' in request body`,
             });
         });
       });
@@ -62,7 +62,7 @@ describe.only('Auth Endpoints', function () {
           .post('/api/user')
           .send(shortPassUser)
           .expect(400, {
-            error: { message: 'Password must be longer than 8 characters' },
+            error: 'Password must be longer than 8 characters',
           });
       });
 
@@ -77,7 +77,7 @@ describe.only('Auth Endpoints', function () {
           .post('/api/user')
           .send(longPassUser)
           .expect(400, {
-            error: { message: 'Password must be less than 72 characters' },
+            error: 'Password must be less than 72 characters',
           });
       });
       it('responds with 400 "Password cannot begin with a space" when space at beginning of password', () => {
@@ -91,7 +91,7 @@ describe.only('Auth Endpoints', function () {
           .post('/api/user')
           .send(spaceBeforePassUser)
           .expect(400, {
-            error: { message: 'Password must not start or end with a space' },
+            error: 'Password must not start or end with a space',
           });
       });
       it('responds with 400 "Password cannot end with a space" when space at end of password', () => {
@@ -105,7 +105,7 @@ describe.only('Auth Endpoints', function () {
           .post('/api/user')
           .send(spaceAfterPassUser)
           .expect(400, {
-            error: { message: 'Password must not start or end with a space' },
+            error: 'Password must not start or end with a space',
           });
       });
       it('responds with 400 error when password isnt complex enough,', () => {
@@ -119,10 +119,8 @@ describe.only('Auth Endpoints', function () {
           .post('/api/user')
           .send(badPassUser)
           .expect(400, {
-            error: {
-              message:
-                'Password must contain 1 upper case, lower case, number and special character',
-            },
+            error:
+                `Password must contain 1 upper case, lower case, number and special character`,
           });
       });
       it('responds with 400 error when username is already taken', () => {
@@ -136,9 +134,7 @@ describe.only('Auth Endpoints', function () {
           .post('/api/user')
           .send(takenPassUser)
           .expect(400, {
-            error: {
-              message: 'Username already taken',
-            },
+            error: 'Username already taken',
           });
       });
     });

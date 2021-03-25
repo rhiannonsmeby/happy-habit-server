@@ -21,11 +21,11 @@ VALUES
 -- (3, 'Watch an episode of my favorite TV show'),
 -- (3, 'Take a shower');
 
-INSERT INTO "entry" (assigned_user, exercise, start_mood, end_mood, notes)
+INSERT INTO "entry" (exercise, start_mood, end_mood, notes)
 VALUES
-(1, 'journal', 1, 3, 'Today I used a journal propmt about gratitude. I finished about 20 minutes of journaling feeling much better.'),
-(2, 'go for a walk', 1, 2, 'Not the major mood boost I was looking for'),
-(3, 'yoga', 2, 4, ''),
-(3, 'cook a nutritious meal', 2, 5, 'Sometimes when I think I am sad, I am really just dirty haha');
+('journal', 1, 3, 'Today I used a journal propmt about gratitude. I finished about 20 minutes of journaling feeling much better.'),
+('go for a walk', 1, 2, 'Not the major mood boost I was looking for'),
+('yoga', 2, 4, 'nothing needs to be here'),
+('cook a nutritious meal', 2, 5, 'Sometimes when I think I am sad, I am really just dirty haha');
 
 COMMIT;

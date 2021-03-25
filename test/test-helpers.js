@@ -34,6 +34,47 @@ function makeUsersArray() {
   ]
 }
 
+function makeEntriesArray() {
+  return [
+    {
+      id: 1,
+      assigned_user: user[1].id, 
+      exercise: 'activity 1', 
+      start_mood: 1, 
+      end_mood: 5, 
+      notes: 'notes on activity 1',
+      date_created: '2029-01-22T16:28:32.615Z',
+    }, 
+    {
+      id: 2,
+      assigned_user: user[1].id, 
+      exercise: 'activity 2', 
+      start_mood: 1, 
+      end_mood: 3, 
+      notes: 'notes on activity 2',
+      date_created: '2029-01-22T16:28:32.615Z',
+    }, 
+    {
+      id: 3,
+      assigned_user: user[0].id, 
+      exercise: 'activity 3', 
+      start_mood: 1, 
+      end_mood: 5, 
+      notes: 'notes on activity 3',
+      date_created: '2029-01-22T16:28:32.615Z',
+    }, 
+    {
+      id: 4,
+      assigned_user: user[1].id, 
+      exercise: 'activity 4', 
+      start_mood: 1, 
+      end_mood: 5, 
+      notes: 'notes on activity 4',
+      date_created: '2029-01-22T16:28:32.615Z',
+    }, 
+  ]
+}
+
 /**
  * make a bearer token with jwt for authorization header
  * @param {object} user - contains `id`, `username`
@@ -90,19 +131,23 @@ function seedUsers(db, users) {
   })
 }
 
-// async function seedUsersEntries(db, users, entries) {
-//     await seedUsers(db, users)
-
-//     await db.transaction(async trx => {
-//         await trx.into('entry').insert(entries)
-//     })
-// }
+async function seedUsersEntries(db, users, entry) {
+    return db.transaction(async trx => {
+      await seedUsers(trx, users);
+      await trx.into('entry').insert(entry);
+      await trx.raw(
+        `SELECT setval('entry_id_seq', ?)`,
+        [entry[entry.length - 1].id],
+      );
+    })
+}
 
 module.exports = {
   makeKnexInstance,
   makeUsersArray,
+  makeEntriesArray,
   makeAuthHeader,
   cleanTables,
   seedUsers,
-//   seedUsersEntries,
+  seedUsersEntries,
 }

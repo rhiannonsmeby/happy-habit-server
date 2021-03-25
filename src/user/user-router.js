@@ -12,7 +12,7 @@ userRouter
     for (const field of ['name', 'username', 'password'])
       if (!req.body[field])
         return res.status(400).json({
-          error: {message: `Missing '${field}' in request body`}
+          error: `Missing '${field}' in request body`
         })
 
     try {
@@ -27,7 +27,7 @@ userRouter
       )
 
       if (hasUserWithUsername)
-        return res.status(400).json({ error: {message: `Username already taken`} })
+        return res.status(400).json({ error: `Username already taken` })
 
       const hashedPassword = await  UserService.hashPassword(password)
 

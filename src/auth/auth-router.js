@@ -54,7 +54,7 @@ authRouter
   .put(requireAuth, (req, res) => {
     const sub = req.user.username
     const payload = {
-      user_id: req.user.id,
+      id: req.user.id,
       name: req.user.name,
     }
     res.send({

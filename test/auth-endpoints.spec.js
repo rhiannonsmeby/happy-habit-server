@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only('Auth Endpoints', function () {
+describe('Auth Endpoints', function () {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -101,7 +101,7 @@ describe.only('Auth Endpoints', function () {
 
     it(`responds 200 and JWT auth token using secret`, () => {
       const expectedToken = jwt.sign(
-        { user_id: testUser.id, name: testUser.name },
+        { id: testUser.id, name: testUser.name },
         process.env.JWT_SECRET,
         {
           subject: testUser.username,
