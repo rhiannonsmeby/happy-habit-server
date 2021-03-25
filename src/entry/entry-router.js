@@ -30,8 +30,8 @@ entryRouter
     })
     .post(jsonParser, (req, res, next) => {
         const knexInstance = req.app.get('db')
-        const {exercise, start_mood, end_mood, date_created} = req.body
-        const newEntry = {exercise, start_mood, end_mood}
+        const {exercise, start_mood, end_mood, notes, date_created} = req.body
+        const newEntry = {exercise, start_mood, end_mood, notes, date_created}
 
        if (exercise === null) {
            return res.status(404).json({
@@ -79,7 +79,7 @@ entryRouter
                 req.params.id
             )
                 .then((numRowsAffected) => {
-                    res.status(404).end()
+                    res.status(204).end()
                 })
                 .catch(next)
         })
