@@ -1,7 +1,7 @@
 const path = require('path')
 const express = require('express')
 const EntryService = require('./entry-service')
-// const { requireAuth } = require('../middleware/jwt-auth')
+const { requireAuth } = require('../middleware/jwt-auth')
 // const {join} = require('path')
 
 const entryRouter = express.Router()
@@ -9,29 +9,27 @@ const jsonParser = express.json()
 
 const serializeEntry = entry => ({
     id: entry.id,
-    // assigned_user: entry.assigned_user,
     exercise: entry.exercise,
     start_mood: entry.start_mood,
     end_mood: entry.end_mood,
     notes: entry.notes,
     date_created: entry.date_created,
+    // user_id: entry.user_id,
 })
 
 entryRouter
     .route('/')
-    // .all(requireAuth)
-    .get((req, res, next) => {
-        const knexInstance = req.app.get('db')
-        EntryService.getAllEntries(knexInstance)
+    .get(requireAuth, (req, res, next) => {
+        EntryService.getUsersEntries(req.app.get('db'), req.user.id)
             .then(entry => {
                 res.json(entry.map(serializeEntry))
             })
             .catch(next)
     })
-    .post(jsonParser, (req, res, next) => {
+    .post(requireAuth, jsonParser, (req, res, next) => {
         const knexInstance = req.app.get('db')
         const {exercise, start_mood, end_mood, notes, date_created} = req.body
-        const newEntry = {exercise, start_mood, end_mood, notes, date_created}
+        const newEntry = {exercise, start_mood, end_mood, notes, date_created, user_id: req.user.id}
 
        if (exercise === null) {
            return res.status(404).json({
@@ -41,6 +39,7 @@ entryRouter
        if(date_created) {
            newEntry.date_created = date_created
        }
+
 
         EntryService.addEntry(knexInstance, newEntry)
             .then(entry => {

@@ -1,34 +1,34 @@
 const EntryService = {
-    getAllEntries(knex) {
-        return knex
+    getUsersEntries(db, user_id) {
+        return db
             .select('*')
             .from('entry')
+            .where({user_id})
     },
-    getById(knex, id) {
-        return knex
-            .from('entry')
+    getById(db, id) {
+        return db
             .select('*')
-            .where('id', id)
+            .from('entry')
+            .where({id})
             .first()
     },
-    addEntry(knex, newEntry) {
-        return knex
+    addEntry(db, newEntry) {
+        return db
             .insert(newEntry)
             .into('entry')
             .returning('*')
-            .then(rows => {
-                return rows[0]
+            .then(([entry]) => {
+                return entry
             })
+            .then((entry) => this.getById(knex, entry.id))
     },
-    deleteEntry(knex, id) {
-        return knex('entry')
-            .from('entry')
+    deleteEntry(db, id) {
+        return db('entry')
             .where({id})
             .delete()
     },
-    updateEntry(knex, id, updateEntry) {
-        return knex('entry')
-            .from('entry')
+    updateEntry(db, id, updateEntry) {
+        return db('entry')
             .where({id})
             .update(updateEntry);
     },
