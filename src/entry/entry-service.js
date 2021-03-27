@@ -20,7 +20,6 @@ const EntryService = {
             .then(([entry]) => {
                 return entry
             })
-            .then((entry) => this.getById(knex, entry.id))
     },
     deleteEntry(db, id) {
         return db('entry')

@@ -14,7 +14,6 @@ const serializeEntry = entry => ({
     end_mood: entry.end_mood,
     notes: entry.notes,
     date_created: entry.date_created,
-    // user_id: entry.user_id,
 })
 
 entryRouter
