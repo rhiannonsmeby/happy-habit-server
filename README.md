@@ -1,6 +1,6 @@
 # Happy Habit Server
 
-### Live App: 
+### Live App: https://happy-habit.vercel.app/
 ### Client Repo: https://github.com/rhiannonsmeby/happy-habit
 
 ### Summary
@@ -36,7 +36,7 @@ The User endpoint is for user registration
 ```javascript
 /api/entry
 ```
-Returns the entries that are assigned to the user
+Returns entries that are assigned to the user and enables users to post, update, and delete their entries
 
 
 #### Status codes
