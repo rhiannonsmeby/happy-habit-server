@@ -1,7 +1,7 @@
 require('dotenv').config()
 const knex = require('knex')
-const app = require('./app')
-const {PORT, DATABASE_URL} = require('./config')
+const app = require('./src/app')
+const {PORT, DATABASE_URL} = require('./src/config')
 const pg = require('pg')
 
 pg.defaults.ssl = process.env.NODE_ENV === 'production';
