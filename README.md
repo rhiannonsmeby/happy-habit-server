@@ -1,30 +1,48 @@
-# Express Boilerplate!
+# Happy Habit Server
 
-This is a boilerplate project used for starting new projects!
+### Live App: 
+### Client Repo: https://github.com/rhiannonsmeby/happy-habit
 
-## Set up
+### Summary
+The Happy Habit application helps users manage their feelings by providing a user-friendly interface for logging moods and coping exercises. 
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+### Technology Used
+* Node.js
+* Express
+* PostgreSQL
 
-1. Clone this repository to your local machine `git clone https://github.com/rhiannonsmeby/express-boilerplate.git NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+### API Documentation
+#### Base URL: 
 
-## Scripts
+#### Responses
+This API returns json responses in the following format
+```javascript
+{
+    "error": "message"
+}
+```
 
-Start the application `npm start`
+#### Endpoints
+```javascript
+/api/auth
+```
+The Auth endpoint is for verifying user details at login
 
-Start nodemon for the application `npm run dev`
+```javascript
+/api/user
+```
+The User endpoint is for user registration
 
-Run the tests `npm test`
+```javascript
+/api/entry
+```
+Returns the entries that are assigned to the user
 
-## Deploying
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's main branch.
-
-## Remember
-
-You can generate a UUID for your API token at https://www.uuidgenerator.net/version4
+#### Status codes
+* 200 OK
+* 201 CREATED
+* 204 DELETED
+* 400 BAD REQUEST
+* 404 NOT FOUND
+* 500 INTERNAL SERVER ERROR
