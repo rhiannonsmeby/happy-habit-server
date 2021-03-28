@@ -3,13 +3,13 @@ const supertest = require('supertest');
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe.only('Entry Endpoints', () => {
+describe('Entry Endpoints', () => {
     let db;
 
     const {testUsers} = helpers.makeUsersArray()
-    const testUser = testUsers[0]
+    const testUser = testUsers
     const {testEntries} = helpers.makeEntriesArray()
-    const testEntry = testEntries[0]
+    // const testEntry = testEntries[0]
 
     before('Make the knex instance', () => {
         db = knex({

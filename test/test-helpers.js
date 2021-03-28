@@ -38,7 +38,7 @@ function makeEntriesArray() {
   return [
     {
       id: 1,
-      assigned_user: user[1].id, 
+      assigned_user: 1, 
       exercise: 'activity 1', 
       start_mood: 1, 
       end_mood: 5, 
@@ -47,7 +47,7 @@ function makeEntriesArray() {
     }, 
     {
       id: 2,
-      assigned_user: user[1].id, 
+      assigned_user: 1, 
       exercise: 'activity 2', 
       start_mood: 1, 
       end_mood: 3, 
@@ -56,7 +56,7 @@ function makeEntriesArray() {
     }, 
     {
       id: 3,
-      assigned_user: user[0].id, 
+      assigned_user: 2, 
       exercise: 'activity 3', 
       start_mood: 1, 
       end_mood: 5, 
@@ -65,7 +65,7 @@ function makeEntriesArray() {
     }, 
     {
       id: 4,
-      assigned_user: user[1].id, 
+      assigned_user: 2, 
       exercise: 'activity 4', 
       start_mood: 1, 
       end_mood: 5, 
