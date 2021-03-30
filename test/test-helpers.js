@@ -34,20 +34,26 @@ function makeUsersArray() {
   ]
 }
 
-function makeEntriesArray() {
+/**
+ * generate fixtures of entried for a given user
+ * @param {object} user - contains `id` property
+ * @returns {Array(entries)} - arrays of entries
+ */
+
+function makeEntriesArray(user) {
   return [
     {
-      id: 1,
-      assigned_user: 1, 
-      exercise: 'activity 1', 
-      start_mood: 1, 
-      end_mood: 5, 
-      notes: 'notes on activity 1',
+      user_id: user.id, 
       date_created: '2029-01-22T16:28:32.615Z',
+      end_mood: 5, 
+      exercise: 'activity 1', 
+      id: 1,
+      notes: 'notes on activity 1',
+      start_mood: 1, 
     }, 
     {
       id: 2,
-      assigned_user: 1, 
+      user_id: user.id, 
       exercise: 'activity 2', 
       start_mood: 1, 
       end_mood: 3, 
@@ -56,7 +62,7 @@ function makeEntriesArray() {
     }, 
     {
       id: 3,
-      assigned_user: 2, 
+      user_id: user.id, 
       exercise: 'activity 3', 
       start_mood: 1, 
       end_mood: 5, 
@@ -65,7 +71,7 @@ function makeEntriesArray() {
     }, 
     {
       id: 4,
-      assigned_user: 2, 
+      user_id: user.id, 
       exercise: 'activity 4', 
       start_mood: 1, 
       end_mood: 5, 
@@ -132,8 +138,9 @@ function seedUsers(db, users) {
 }
 
 async function seedUsersEntries(db, users, entry) {
-    return db.transaction(async trx => {
-      await seedUsers(trx, users);
+  await seedUsers(db, users)
+
+    await db.transaction(async trx => {
       await trx.into('entry').insert(entry);
       await trx.raw(
         `SELECT setval('entry_id_seq', ?)`,
