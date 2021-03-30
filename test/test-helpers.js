@@ -129,12 +129,12 @@ function seedUsers(db, users) {
   }))
   return db.transaction(async trx => {
     await trx.into('user').insert(preppedUsers)
-
+    
     await trx.raw(
-      `SELECT setval('user_id_seq', ?)`,
-      [users[users.length - 1].id],
+        `SELECT setval('user_id_seq', ?)`,
+        [users[users.length - 1].id],
     )
-  })
+    })
 }
 
 async function seedUsersEntries(db, users, entry) {
@@ -142,10 +142,12 @@ async function seedUsersEntries(db, users, entry) {
 
     await db.transaction(async trx => {
       await trx.into('entry').insert(entry);
-      await trx.raw(
-        `SELECT setval('entry_id_seq', ?)`,
-        [entry[entry.length - 1].id],
-      );
+      await Promise.all ([
+        trx.raw(
+          `SELECT setval('entry_id_seq', ?)`,
+          [entry[entry.length - 1].id],
+        ),
+      ])
     })
 }
 
